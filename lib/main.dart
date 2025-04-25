@@ -1,5 +1,9 @@
 // lib/main.dart
+import 'package:book_f_recipes/presentation/pages/home_page.dart';
+import 'package:book_f_recipes/viewmodels/category_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
 import 'core/database/database_helper.dart';
 
 void main() async {
@@ -32,13 +36,17 @@ class BookOfRecipesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Book of Recipes',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: <SingleChildWidget>[
+        ChangeNotifierProvider<CategoryViewModel>(
+          create: (_) => CategoryViewModel(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Book of Recipes',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: const HomePage(),
       ),
-      home: const Placeholder(), // пока заглушка, потом будет HomePage
     );
   }
 }

@@ -21,12 +21,33 @@ class DatabaseHelper {
   }
 
   Future<void> _createDB(Database db, int version) async {
+    // 1. Создаем таблицу категорий
     await db.execute('''
       CREATE TABLE category (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL
       )
     ''');
+    // 2. СРАЗУ ЖЕ заполняем ее начальными данными
+    // Можно сделать это через batch для эффективности, если категорий много
+    Batch batch = db.batch();
+    List<String> initialCategories = <String>[
+      'Завтраки',
+      'Супы',
+      'Основные блюда',
+      'Салаты',
+      'Десерты',
+      'Напитки',
+    ];
+
+    for (String categoryName in initialCategories) {
+      // Используем INSERT OR IGNORE чтобы избежать ошибки если вдруг
+      // категория с таким именем уже есть (хотя в _onCreate это маловероятно)
+      batch.insert('category', <String, String>{
+        'name': categoryName,
+      }, conflictAlgorithm: ConflictAlgorithm.ignore);
+    }
+    await batch.commit(noResult: true); // Выполняем все операции вставки
 
     await db.execute('''
       CREATE TABLE ingredient (

@@ -4,6 +4,7 @@ class Recipe {
   final String description;
   final int prepareTime;
   final int ingridientsId; // внешний ключ на таблицу Ingridients
+  final int categoryId;
 
   Recipe({
     this.id,
@@ -11,16 +12,18 @@ class Recipe {
     required this.description,
     required this.prepareTime,
     required this.ingridientsId,
+    required this.categoryId,
   });
 
   /// Преобразование объекта в Map для сохранения в БД
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'name': name,
       'description': description,
       'prepareTime': prepareTime,
       'ingridientsId': ingridientsId,
+      'categoryId': categoryId,
     };
   }
 
@@ -32,6 +35,7 @@ class Recipe {
       description: map['description'],
       prepareTime: map['prepareTime'],
       ingridientsId: map['ingridientsId'],
+      categoryId: map['categoryId'],
     );
   }
 
@@ -42,6 +46,7 @@ class Recipe {
     String? description,
     int? prepareTime,
     int? ingridientsId,
+    int? categoryId,
   }) {
     return Recipe(
       id: id ?? this.id,
@@ -49,6 +54,7 @@ class Recipe {
       description: description ?? this.description,
       prepareTime: prepareTime ?? this.prepareTime,
       ingridientsId: ingridientsId ?? this.ingridientsId,
+      categoryId: categoryId ?? this.categoryId,
     );
   }
 }

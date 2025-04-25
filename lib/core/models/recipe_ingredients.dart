@@ -1,6 +1,6 @@
 class RecipeIngredients {
   final int? id;
-  final int count;
+  final double count;
   final int recipeId;
   final int ingridientsId;
 
@@ -34,7 +34,7 @@ class RecipeIngredients {
   /// Метод копирования с изменением отдельных полей
   RecipeIngredients copyWith({
     int? id,
-    int? count,
+    double? count,
     int? recipeId,
     int? ingridientsId,
   }) {

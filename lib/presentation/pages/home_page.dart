@@ -1,3 +1,4 @@
+import 'package:book_f_recipes/presentation/pages/recipe_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/category_viewmodel.dart';
@@ -28,7 +29,16 @@ class HomePage extends StatelessWidget {
                   return ListTile(
                     title: Text(category.name),
                     onTap: () {
-                      // Логика для перехода к категории
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<RecipeListPage>(
+                          builder:
+                              (BuildContext context) => RecipeListPage(
+                                categoryId: category.id!,
+                                categoryName: category.name,
+                              ),
+                        ),
+                      );
                     },
                   );
                 },

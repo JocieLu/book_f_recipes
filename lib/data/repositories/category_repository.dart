@@ -11,7 +11,7 @@ class CategoryRepository {
     final List<Map<String, dynamic>> maps = await db.query('category');
 
     return List<Category>.generate(maps.length, (int i) {
-      return Category(id: maps[i]['id'], name: maps[i]['name']);
+      return Category.fromMap(maps[i]);
     });
   }
 

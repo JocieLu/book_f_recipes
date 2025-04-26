@@ -2,13 +2,13 @@ class RecipeIngredients {
   final int? id;
   final double count;
   final int recipeId;
-  final int ingridientsId;
+  final int ingridientId;
 
   RecipeIngredients({
     this.id,
     required this.count,
     required this.recipeId,
-    required this.ingridientsId,
+    required this.ingridientId,
   });
 
   /// Преобразование в Map для SQLite
@@ -17,7 +17,7 @@ class RecipeIngredients {
       'id': id,
       'count': count,
       'recipeId': recipeId,
-      'ingridientsId': ingridientsId,
+      'ingridientsId': ingridientId,
     };
   }
 
@@ -27,7 +27,7 @@ class RecipeIngredients {
       id: map['id'],
       count: map['count'],
       recipeId: map['recipeId'],
-      ingridientsId: map['ingridientsId'],
+      ingridientId: map['ingridientId'],
     );
   }
 
@@ -36,13 +36,13 @@ class RecipeIngredients {
     int? id,
     double? count,
     int? recipeId,
-    int? ingridientsId,
+    int? ingridientId,
   }) {
     return RecipeIngredients(
       id: id ?? this.id,
       count: count ?? this.count,
       recipeId: recipeId ?? this.recipeId,
-      ingridientsId: ingridientsId ?? this.ingridientsId,
+      ingridientId: ingridientId ?? this.ingridientId,
     );
   }
 }

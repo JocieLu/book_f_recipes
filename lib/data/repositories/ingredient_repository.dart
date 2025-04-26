@@ -25,6 +25,22 @@ class IngredientRepository {
     });
   }
 
+  // Получение ингредиента по id
+  Future<Ingredient?> getIngredientById(int id) async {
+    final Database db = await _databaseHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'ingredient',
+      where: 'id = ?',
+      whereArgs: <int>[id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Ingredient.fromMap(maps.first);
+    } else {
+      return null;
+    }
+  }
+
   // Обновление ингредиента
   Future<void> updateIngredient(Ingredient ingredient) async {
     final Database db = await _databaseHelper.database;

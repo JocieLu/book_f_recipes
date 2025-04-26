@@ -1,75 +1,315 @@
-import 'package:book_f_recipes/viewmodels/recipe_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../viewmodels/recipe_viewmodel.dart';
 import '../../core/models/recipe.dart';
+import '../../core/models/recipe_ingredients.dart';
 
-class CreateRecipePage extends StatefulWidget {
-  final int categoryId;
+class RecipeCreatePage extends StatefulWidget {
+  final int? recipeId; // ID рецепта, если мы редактируем существующий рецепт
+  final int categoryId; // добавляем параметр categoryId
 
-  const CreateRecipePage({super.key, required this.categoryId});
+  const RecipeCreatePage({
+    super.key,
+    required this.categoryId,
+    this.recipeId, // если передается recipeId, значит редактируем
+  });
 
   @override
-  State<CreateRecipePage> createState() => _CreateRecipePageState();
+  State<RecipeCreatePage> createState() => _RecipeCreatePageState();
 }
 
-class _CreateRecipePageState extends State<CreateRecipePage> {
+class _RecipeCreatePageState extends State<RecipeCreatePage> {
+  late RecipeViewModel _recipeViewModel;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _prepareTimeController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+
+  late int _currentRecipeId;
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _recipeViewModel = Provider.of<RecipeViewModel>(context, listen: false);
+
+    if (widget.recipeId != null) {
+      _isEditing = true;
+      _currentRecipeId = widget.recipeId!;
+      _loadRecipeData();
+    } else {
+      _currentRecipeId = -1;
+    }
+  }
+
+  Future<void> _loadRecipeData() async {
+    // Загружаем данные рецепта по его ID, если мы редактируем
+    await _recipeViewModel.fetchRecipeIngredients(_currentRecipeId);
+    final Recipe recipe = _recipeViewModel.recipes.firstWhere(
+      (Recipe recipe) => recipe.id == _currentRecipeId,
+    );
+    _nameController.text = recipe.name;
+    _descriptionController.text = recipe.description;
+    _prepareTimeController.text = recipe.prepareTime.toString();
+    _categoryController.text = recipe.categoryId.toString();
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
+    _descriptionController.dispose();
+    _prepareTimeController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
   Future<void> _saveRecipe() async {
-    final String name = _nameController.text.trim();
+    if (!_formKey.currentState!.validate()) return;
 
-    if (name.isEmpty) {
-      // Показать сообщение об ошибке
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Введите название рецепта')));
-      return;
+    final Recipe newRecipe = Recipe(
+      id: _isEditing ? _currentRecipeId : null,
+      name: _nameController.text,
+      description: _descriptionController.text,
+      prepareTime: int.parse(_prepareTimeController.text),
+      categoryId: int.parse(_categoryController.text),
+    );
+
+    if (_isEditing) {
+      await _recipeViewModel.addRecipe(newRecipe); // Обновить рецепт
+    } else {
+      await _recipeViewModel.addRecipe(newRecipe); // Добавить новый рецепт
     }
 
-    // Создаем объект Recipe
-    final Recipe newRecipe = Recipe(
-      id: null, // id сгенерируется автоматически
-      name: name,
-      categoryId: widget.categoryId,
-      description: "",
-      prepareTime: 120,
-    );
-
-    final RecipeViewModel recipeViewModel = Provider.of<RecipeViewModel>(
-      context,
-      listen: false,
-    );
-    await recipeViewModel.addRecipe(newRecipe);
-
     if (mounted) {
-      Navigator.pop(context);
+      Navigator.of(context).pop(); // Вернуться на предыдущую страницу
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Новый рецепт')),
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Редактировать рецепт' : 'Создать рецепт'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Название рецепта',
+                ),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите название рецепта';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Описание рецепта',
+                ),
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите описание рецепта';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _prepareTimeController,
+                decoration: const InputDecoration(
+                  labelText: 'Время приготовления (мин)',
+                ),
+                keyboardType: TextInputType.number,
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите время приготовления';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _categoryController,
+                decoration: const InputDecoration(labelText: 'ID категории'),
+                keyboardType: TextInputType.number,
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите ID категории';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              Consumer<RecipeViewModel>(
+                builder: (
+                  BuildContext context,
+                  RecipeViewModel viewModel,
+                  Widget? child,
+                ) {
+                  final List<RecipeIngredientFull> ingredients =
+                      viewModel.recipeIngredients;
+
+                  return ingredients.isEmpty
+                      ? const Center(child: Text('Ингредиенты не добавлены.'))
+                      : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: ingredients.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final RecipeIngredientFull item = ingredients[index];
+
+                          return ListTile(
+                            title: Text(item.ingredient.name),
+                            subtitle: Text(
+                              'Ед. изм: ${item.ingredient.unit} | Кол-во: ${item.recipeIngredient.count}',
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                viewModel.deleteRecipeIngredient(
+                                  item.recipeIngredient.id!,
+                                  item.recipeIngredient.recipeId,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      );
+                },
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Открыть страницу добавления ингредиента
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder:
+                          (_) => AddRecipeIngredientPage(
+                            recipeId: _currentRecipeId,
+                          ),
+                    ),
+                  );
+                },
+                child: const Text('Добавить ингредиент'),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _saveRecipe,
+                child: Text(_isEditing ? 'Сохранить' : 'Создать'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AddRecipeIngredientPage extends StatefulWidget {
+  final int recipeId;
+
+  const AddRecipeIngredientPage({super.key, required this.recipeId});
+
+  @override
+  State<AddRecipeIngredientPage> createState() =>
+      _AddRecipeIngredientPageState();
+}
+
+class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
+  late TextEditingController _quantityController;
+  late int _ingredientId;
+
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _quantityController = TextEditingController();
+    _ingredientId = 0; // начальное значение
+  }
+
+  @override
+  void dispose() {
+    _quantityController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addIngredientToRecipe() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final recipeIngredient = RecipeIngredients(
+      recipeId: widget.recipeId,
+      ingridientId: _ingredientId,
+      count: double.parse(_quantityController.text),
+    );
+
+    await Provider.of<RecipeViewModel>(
+      context,
+      listen: false,
+    ).addRecipeIngredient(recipeIngredient);
+
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Добавить ингредиент')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Название рецепта'),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _saveRecipe,
-              child: const Text('Сохранить'),
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              DropdownButtonFormField<int>(
+                value: _ingredientId,
+                onChanged: (value) {
+                  setState(() {
+                    _ingredientId = value!;
+                  });
+                },
+                decoration: const InputDecoration(labelText: 'Ингредиент'),
+                items:
+                    [
+                      // Сюда нужно добавить список ингредиентов
+                    ].map((ingredient) {
+                      return DropdownMenuItem<int>(
+                        value: ingredient.id,
+                        child: Text(ingredient.name),
+                      );
+                    }).toList(),
+                validator: (value) {
+                  if (value == null || value == 0) {
+                    return 'Пожалуйста, выберите ингредиент';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _quantityController,
+                decoration: const InputDecoration(labelText: 'Количество'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите количество';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _addIngredientToRecipe,
+                child: const Text('Добавить ингредиент'),
+              ),
+            ],
+          ),
         ),
       ),
     );

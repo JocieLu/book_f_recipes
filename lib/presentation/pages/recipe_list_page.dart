@@ -47,10 +47,10 @@ class RecipeListPage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute<CreateRecipePage>(
+            MaterialPageRoute<RecipeCreatePage>(
               builder:
                   (BuildContext context) =>
-                      CreateRecipePage(categoryId: categoryId),
+                      RecipeCreatePage(categoryId: categoryId),
             ),
           );
         },

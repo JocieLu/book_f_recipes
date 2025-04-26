@@ -18,9 +18,7 @@ void main() async {
   // но часто сам DatabaseHelper обрабатывает очередь запросов.
   // Безопаснее всего - дождаться первого открытия:
   try {
-    await DatabaseHelper
-        .instance
-        .database; // Это вызовет _initDB при первом запуске
+    await DatabaseHelper.instance.database;
 
     print("Database initialized successfully."); // Для отладки
   } catch (e) {

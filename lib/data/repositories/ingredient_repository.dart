@@ -9,7 +9,7 @@ class IngredientRepository {
   Future<void> insertIngredient(Ingredient ingredient) async {
     final Database db = await _databaseHelper.database;
     await db.insert(
-      'ingredients',
+      'ingredient',
       ingredient.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -18,7 +18,7 @@ class IngredientRepository {
   // Получение всех ингредиентов
   Future<List<Ingredient>> getAllIngredients() async {
     final Database db = await _databaseHelper.database;
-    final List<Map<String, dynamic>> maps = await db.query('ingredients');
+    final List<Map<String, dynamic>> maps = await db.query('ingredient');
 
     return List<Ingredient>.generate(maps.length, (int i) {
       return Ingredient.fromMap(maps[i]);
@@ -39,6 +39,6 @@ class IngredientRepository {
   // Удаление ингредиента
   Future<void> deleteIngredient(int id) async {
     final Database db = await _databaseHelper.database;
-    await db.delete('ingredients', where: 'id = ?', whereArgs: <int>[id]);
+    await db.delete('ingredient', where: 'id = ?', whereArgs: <int>[id]);
   }
 }

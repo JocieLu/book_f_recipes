@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:book_f_recipes/presentation/pages/home_page.dart';
 import 'package:book_f_recipes/viewmodels/category_viewmodel.dart';
+import 'package:book_f_recipes/viewmodels/ingredient_viewmodel.dart';
 import 'package:book_f_recipes/viewmodels/recipe_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -42,6 +43,9 @@ class BookOfRecipesApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<RecipeViewModel>(
           create: (_) => RecipeViewModel(),
+        ),
+        ChangeNotifierProvider<IngredientViewModel>(
+          create: (_) => IngredientViewModel(),
         ),
       ],
       child: MaterialApp(

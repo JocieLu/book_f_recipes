@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
-import '../models/category.dart';
-import 'database_helper.dart';
+import '../../core/models/category.dart';
+import '../../core/database/database_helper.dart';
 
 class CategoryRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;

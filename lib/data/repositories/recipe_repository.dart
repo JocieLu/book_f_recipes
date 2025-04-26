@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
-import 'database_helper.dart';
-import '../models/recipe.dart';
+import '../../core/database/database_helper.dart';
+import '../../core/models/recipe.dart';
 
 class RecipeRepository {
   final DatabaseHelper _databaseHelper = DatabaseHelper.instance;

@@ -1,4 +1,4 @@
-import 'package:book_f_recipes/presentation/pages/create_recipe_page.dart';
+import 'package:book_f_recipes/presentation/pages/recipe_create_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/recipe.dart';

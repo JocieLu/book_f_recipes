@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../../core/database/recipe_repository.dart';
+import '../data/repositories/recipe_repository.dart';
 import '../../core/models/recipe.dart';
 
 class RecipeViewModel extends ChangeNotifier {

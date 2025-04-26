@@ -1,4 +1,4 @@
-import 'package:book_f_recipes/viewmodels/recipe_view_model.dart';
+import 'package:book_f_recipes/viewmodels/recipe_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/recipe.dart';

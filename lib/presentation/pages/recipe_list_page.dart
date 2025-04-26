@@ -2,7 +2,7 @@ import 'package:book_f_recipes/presentation/pages/recipe_create_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/recipe.dart';
-import '../../viewmodels/recipe_view_model.dart';
+import '../../viewmodels/recipe_viewmodel.dart';
 
 class RecipeListPage extends StatelessWidget {
   final int categoryId;

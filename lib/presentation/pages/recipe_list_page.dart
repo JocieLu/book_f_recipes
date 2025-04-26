@@ -1,3 +1,4 @@
+import 'package:book_f_recipes/presentation/pages/create_recipe_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/recipe.dart';
@@ -42,6 +43,19 @@ class RecipeListPage extends StatelessWidget {
                   );
                 },
               ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute<CreateRecipePage>(
+              builder:
+                  (BuildContext context) =>
+                      CreateRecipePage(categoryId: categoryId),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }

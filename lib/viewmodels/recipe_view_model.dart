@@ -12,4 +12,9 @@ class RecipeViewModel extends ChangeNotifier {
     _recipes = await _recipeRepository.getRecipesByCategory(categoryId);
     notifyListeners();
   }
+
+  Future<void> addRecipe(Recipe recipe) async {
+    await _recipeRepository.insertRecipe(recipe);
+    await fetchRecipesByCategory(recipe.categoryId); // Перезагружаем список
+  }
 }

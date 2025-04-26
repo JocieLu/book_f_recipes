@@ -3,7 +3,6 @@ class Recipe {
   final String name;
   final String description;
   final int prepareTime;
-  final int ingridientsId; // внешний ключ на таблицу Ingridients
   final int categoryId;
 
   Recipe({
@@ -11,7 +10,6 @@ class Recipe {
     required this.name,
     required this.description,
     required this.prepareTime,
-    required this.ingridientsId,
     required this.categoryId,
   });
 
@@ -22,7 +20,6 @@ class Recipe {
       'name': name,
       'description': description,
       'prepareTime': prepareTime,
-      'ingridientsId': ingridientsId,
       'categoryId': categoryId,
     };
   }
@@ -34,7 +31,6 @@ class Recipe {
       name: map['name'],
       description: map['description'],
       prepareTime: map['prepareTime'],
-      ingridientsId: map['ingridientsId'],
       categoryId: map['categoryId'],
     );
   }
@@ -53,7 +49,6 @@ class Recipe {
       name: name ?? this.name,
       description: description ?? this.description,
       prepareTime: prepareTime ?? this.prepareTime,
-      ingridientsId: ingridientsId ?? this.ingridientsId,
       categoryId: categoryId ?? this.categoryId,
     );
   }

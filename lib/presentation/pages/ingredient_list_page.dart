@@ -98,10 +98,45 @@ class _IngredientListPageState extends State<IngredientListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const CreateIngredientPage(),
+          Navigator.of(context).push(
+            PageRouteBuilder<dynamic>(
+              pageBuilder: (
+                BuildContext context,
+                Animation<double> animation,
+                Animation<double> secondaryAnimation,
+              ) {
+                return const CreateIngredientPage();
+              },
+              transitionsBuilder: (
+                BuildContext context,
+                Animation<double> animation,
+                Animation<double> secondaryAnimation,
+                Widget child,
+              ) {
+                const Offset begin = Offset(0.0, 1.0);
+                const Offset end = Offset.zero;
+                const Curve curve = Curves.easeInOut;
+
+                final Animatable<Offset> slideTween = Tween<Offset>(
+                  begin: begin,
+                  end: end,
+                ).chain(CurveTween(curve: curve));
+                final Animation<Offset> slideAnimation = animation.drive(
+                  slideTween,
+                );
+
+                final Animation<double> fadeAnimation = animation.drive(
+                  CurveTween(curve: Curves.easeIn),
+                );
+
+                return FadeTransition(
+                  opacity: fadeAnimation,
+                  child: SlideTransition(
+                    position: slideAnimation,
+                    child: child,
+                  ),
+                );
+              },
             ),
           );
         },

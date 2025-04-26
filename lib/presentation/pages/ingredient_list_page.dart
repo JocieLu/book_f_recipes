@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/ingredient.dart';
 import '../../viewmodels/ingredient_viewmodel.dart';
-import 'ingredient_create_page.dart'; // Страница для создания ингредиента
+import 'ingredient_create_page.dart';
+import 'ingredient_edit_page.dart'; // Страница для редактирования ингредиента
 
 class IngredientListPage extends StatefulWidget {
   const IngredientListPage({super.key});
@@ -21,8 +22,7 @@ class _IngredientListPageState extends State<IngredientListPage> {
       context,
       listen: false,
     );
-    _ingredientViewModel
-        .fetchIngredients(); // Загружаем ингредиенты через ViewModel
+    _ingredientViewModel.fetchIngredients();
   }
 
   @override
@@ -47,45 +47,67 @@ class _IngredientListPageState extends State<IngredientListPage> {
               final Ingredient ingredient = ingredients[index];
 
               return Dismissible(
-                key: Key(ingredient.id.toString()), // Уникальный ключ
-                direction: DismissDirection.endToStart, // Только справа налево
+                key: Key(ingredient.id.toString()),
                 background: Container(
+                  color: Colors.blue,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.edit, color: Colors.white),
+                ),
+                secondaryBackground: Container(
                   color: Colors.red,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: const Icon(Icons.delete, color: Colors.white),
                 ),
+                direction: DismissDirection.horizontal, // Оба направления
                 confirmDismiss: (DismissDirection direction) async {
-                  // Подтверждение удаления
-                  return await showDialog<bool>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Удаление ингредиента'),
-                        content: const Text(
-                          'Вы уверены, что хотите удалить этот ингредиент?',
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
-                            child: const Text('Отмена'),
+                  if (direction == DismissDirection.startToEnd) {
+                    // Свайп слева направо — редактирование
+                    Navigator.of(context).push(
+                      MaterialPageRoute<dynamic>(
+                        builder:
+                            (BuildContext context) =>
+                                EditIngredientPage(ingredient: ingredient),
+                      ),
+                    );
+                    return false; // Не удаляем
+                  } else if (direction == DismissDirection.endToStart) {
+                    // Свайп справа налево — удаление
+                    final bool? confirmDelete = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Удаление ингредиента'),
+                          content: const Text(
+                            'Вы уверены, что хотите удалить этот ингредиент?',
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text('Удалить'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('Отмена'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text('Удалить'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    return confirmDelete ?? false;
+                  }
+                  return false;
                 },
                 onDismissed: (DismissDirection direction) {
-                  viewModel.deleteIngredient(ingredient.id!);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Ингредиент "${ingredient.name}" удален'),
-                    ),
-                  );
+                  if (direction == DismissDirection.endToStart) {
+                    viewModel.deleteIngredient(ingredient.id!);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Ингредиент "${ingredient.name}" удален'),
+                      ),
+                    );
+                  }
                 },
                 child: ListTile(
                   title: Text(ingredient.name),
@@ -100,13 +122,12 @@ class _IngredientListPageState extends State<IngredientListPage> {
         onPressed: () {
           Navigator.of(context).push(
             PageRouteBuilder<dynamic>(
-              pageBuilder: (
-                BuildContext context,
-                Animation<double> animation,
-                Animation<double> secondaryAnimation,
-              ) {
-                return const CreateIngredientPage();
-              },
+              pageBuilder:
+                  (
+                    BuildContext context,
+                    Animation<double> animation,
+                    Animation<double> secondaryAnimation,
+                  ) => const CreateIngredientPage(),
               transitionsBuilder: (
                 BuildContext context,
                 Animation<double> animation,
@@ -124,7 +145,6 @@ class _IngredientListPageState extends State<IngredientListPage> {
                 final Animation<Offset> slideAnimation = animation.drive(
                   slideTween,
                 );
-
                 final Animation<double> fadeAnimation = animation.drive(
                   CurveTween(curve: Curves.easeIn),
                 );

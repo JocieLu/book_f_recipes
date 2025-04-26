@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/ingredient.dart';
 import '../../viewmodels/ingredient_viewmodel.dart';
-import 'create_ingredient_page.dart'; // Страница для создания ингредиента
+import 'ingredient_create_page.dart'; // Страница для создания ингредиента
 
 class IngredientListPage extends StatefulWidget {
   const IngredientListPage({super.key});

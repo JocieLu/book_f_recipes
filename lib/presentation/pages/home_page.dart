@@ -1,48 +1,46 @@
-import 'package:book_f_recipes/presentation/pages/recipe_list_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../viewmodels/category_viewmodel.dart';
-import '../../core/models/category.dart';
+import 'category_list_page.dart'; // это твоя старая home_page.dart
+import 'ingredient_list_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  static final List<Widget> _pages = <Widget>[
+    const CategoriesPage(),
+    const IngredientListPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final CategoryViewModel categoryViewModel = Provider.of<CategoryViewModel>(
-      context,
-    );
-
-    if (categoryViewModel.categories.isEmpty) {
-      categoryViewModel.fetchCategories();
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Категории')),
-      body:
-          categoryViewModel.categories.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                itemCount: categoryViewModel.categories.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Category category = categoryViewModel.categories[index];
-                  return ListTile(
-                    title: Text(category.name),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<RecipeListPage>(
-                          builder:
-                              (BuildContext context) => RecipeListPage(
-                                categoryId: category.id!,
-                                categoryName: category.name,
-                              ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: 'Рецепты',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_basket),
+            label: 'Ингредиенты',
+          ),
+        ],
+      ),
     );
   }
 }

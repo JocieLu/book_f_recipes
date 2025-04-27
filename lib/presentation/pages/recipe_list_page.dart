@@ -35,11 +35,26 @@ class RecipeListPage extends StatelessWidget {
                 itemBuilder: (BuildContext context, int index) {
                   final Recipe recipe = recipeViewModel.recipes[index];
                   return ListTile(
-                    title: Text(recipe.name), // Показываем название рецепта
-                    subtitle: Text(recipe.description), // Описание если есть
+                    title: Text(recipe.name),
+                    subtitle: Text(recipe.description),
                     onTap: () {
-                      // потом сделаем переход на страницу деталей рецепта
+                      // Здесь будет открытие страницы просмотра рецепта (пока заглушка)
                     },
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<RecipeCreatePage>(
+                            builder:
+                                (BuildContext context) => RecipeCreatePage(
+                                  categoryId: recipe.categoryId,
+                                  recipeId: recipe.id,
+                                ),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
               ),

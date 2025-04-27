@@ -1,4 +1,5 @@
 import 'package:book_f_recipes/presentation/pages/recipe_create_page.dart';
+import 'package:book_f_recipes/presentation/pages/recipe_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/models/recipe.dart';
@@ -38,7 +39,12 @@ class RecipeListPage extends StatelessWidget {
                     title: Text(recipe.name),
                     subtitle: Text(recipe.description),
                     onTap: () {
-                      // Здесь будет открытие страницы просмотра рецепта (пока заглушка)
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<dynamic>(
+                          builder: (_) => RecipeViewPage(recipeId: recipe.id!),
+                        ),
+                      );
                     },
                     trailing: IconButton(
                       icon: const Icon(Icons.edit),

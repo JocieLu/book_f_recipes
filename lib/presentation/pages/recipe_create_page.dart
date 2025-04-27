@@ -77,7 +77,7 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
     );
 
     if (_isEditing) {
-      await _recipeViewModel.addRecipe(newRecipe); // Обновить рецепт
+      await _recipeViewModel.updateRecipe(newRecipe); // Обновить рецепт
     } else {
       await _recipeViewModel.addRecipe(newRecipe); // Добавить новый рецепт
     }
@@ -188,12 +188,9 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
                 child: const Text('Добавить ингредиент'),
               ),
               const SizedBox(height: 20),
-              Visibility(
-                visible: !_isEditing,
-                child: ElevatedButton(
-                  onPressed: _saveRecipe,
-                  child: const Text('Сохранить'),
-                ),
+              ElevatedButton(
+                onPressed: _saveRecipe,
+                child: const Text('Сохранить'),
               ),
             ],
           ),

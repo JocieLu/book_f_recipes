@@ -40,7 +40,10 @@ class RecipeViewModel extends ChangeNotifier {
 
   Future<void> addRecipe(Recipe recipe) async {
     await _recipeRepository.insertRecipe(recipe);
-    await fetchRecipesByCategory(recipe.categoryId);
+  }
+
+  Future<void> updateRecipe(Recipe recipe) async {
+    await _recipeRepository.updateRecipe(recipe);
   }
 
   Future<void> fetchRecipeIngredients(int recipeId) async {

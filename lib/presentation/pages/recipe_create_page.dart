@@ -188,9 +188,12 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
                 child: const Text('Добавить ингредиент'),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveRecipe,
-                child: Text(_isEditing ? 'Сохранить' : 'Создать'),
+              Visibility(
+                visible: !_isEditing,
+                child: ElevatedButton(
+                  onPressed: _saveRecipe,
+                  child: const Text('Сохранить'),
+                ),
               ),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:book_f_recipes/core/models/ingredient.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/recipe_viewmodel.dart';
@@ -211,7 +212,9 @@ class AddRecipeIngredientPage extends StatefulWidget {
 
 class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
   late TextEditingController _quantityController;
-  late int _ingredientId;
+  int? _ingredientId;
+
+  List<Ingredient> _ingredients = <Ingredient>[];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -219,7 +222,20 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
   void initState() {
     super.initState();
     _quantityController = TextEditingController();
-    _ingredientId = 0; // начальное значение
+    _ingredientId = null;
+
+    _loadIngredients();
+  }
+
+  Future<void> _loadIngredients() async {
+    final RecipeViewModel viewModel = Provider.of<RecipeViewModel>(
+      context,
+      listen: false,
+    );
+
+    _ingredients = await viewModel.fetchAllIngredients();
+
+    setState(() {});
   }
 
   @override
@@ -233,7 +249,7 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
 
     final RecipeIngredients recipeIngredient = RecipeIngredients(
       recipeId: widget.recipeId,
-      ingridientId: _ingredientId,
+      ingredientId: _ingredientId!,
       count: double.parse(_quantityController.text),
     );
 
@@ -266,9 +282,7 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
                 },
                 decoration: const InputDecoration(labelText: 'Ингредиент'),
                 items:
-                    <dynamic>[
-                      // Сюда нужно добавить список ингредиентов
-                    ].map((dynamic ingredient) {
+                    _ingredients.map((dynamic ingredient) {
                       return DropdownMenuItem<int>(
                         value: ingredient.id,
                         child: Text(ingredient.name),

@@ -29,6 +29,10 @@ class RecipeViewModel extends ChangeNotifier {
   List<RecipeIngredientFull> _recipeIngredients = <RecipeIngredientFull>[];
   List<RecipeIngredientFull> get recipeIngredients => _recipeIngredients;
 
+  Future<List<Ingredient>> fetchAllIngredients() async {
+    return await _ingredientRepository.getAllIngredients();
+  }
+
   Future<void> fetchRecipesByCategory(int categoryId) async {
     _recipes = await _recipeRepository.getRecipesByCategory(categoryId);
     notifyListeners();
@@ -47,7 +51,7 @@ class RecipeViewModel extends ChangeNotifier {
 
     for (final RecipeIngredients ri in ingredientsRaw) {
       final Ingredient? ingredient = await _ingredientRepository
-          .getIngredientById(ri.ingridientId);
+          .getIngredientById(ri.ingredientId);
       if (ingredient != null) {
         fullIngredients.add(
           RecipeIngredientFull(recipeIngredient: ri, ingredient: ingredient),

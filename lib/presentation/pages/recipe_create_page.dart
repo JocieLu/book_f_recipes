@@ -24,15 +24,17 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _prepareTimeController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
 
+  late int _currentCategoryId;
   late int _currentRecipeId;
+
   bool _isEditing = false;
 
   @override
   void initState() {
     super.initState();
     _recipeViewModel = Provider.of<RecipeViewModel>(context, listen: false);
+    _currentCategoryId = widget.categoryId;
 
     if (widget.recipeId != null) {
       _isEditing = true;
@@ -52,7 +54,6 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
     _nameController.text = recipe.name;
     _descriptionController.text = recipe.description;
     _prepareTimeController.text = recipe.prepareTime.toString();
-    _categoryController.text = recipe.categoryId.toString();
   }
 
   @override
@@ -60,7 +61,6 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
     _nameController.dispose();
     _descriptionController.dispose();
     _prepareTimeController.dispose();
-    _categoryController.dispose();
     super.dispose();
   }
 
@@ -72,7 +72,7 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
       name: _nameController.text,
       description: _descriptionController.text,
       prepareTime: int.parse(_prepareTimeController.text),
-      categoryId: int.parse(_categoryController.text),
+      categoryId: _currentCategoryId,
     );
 
     if (_isEditing) {
@@ -135,17 +135,6 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(labelText: 'ID категории'),
-                keyboardType: TextInputType.number,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите ID категории';
-                  }
-                  return null;
-                },
-              ),
               const SizedBox(height: 20),
               Consumer<RecipeViewModel>(
                 builder: (
@@ -187,7 +176,7 @@ class _RecipeCreatePageState extends State<RecipeCreatePage> {
                 onPressed: () {
                   // Открыть страницу добавления ингредиента
                   Navigator.of(context).push(
-                    MaterialPageRoute(
+                    MaterialPageRoute<dynamic>(
                       builder:
                           (_) => AddRecipeIngredientPage(
                             recipeId: _currentRecipeId,
@@ -224,7 +213,7 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
   late TextEditingController _quantityController;
   late int _ingredientId;
 
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -242,7 +231,7 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
   Future<void> _addIngredientToRecipe() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final recipeIngredient = RecipeIngredients(
+    final RecipeIngredients recipeIngredient = RecipeIngredients(
       recipeId: widget.recipeId,
       ingridientId: _ingredientId,
       count: double.parse(_quantityController.text),
@@ -267,25 +256,25 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
         child: Form(
           key: _formKey,
           child: Column(
-            children: [
+            children: <Widget>[
               DropdownButtonFormField<int>(
                 value: _ingredientId,
-                onChanged: (value) {
+                onChanged: (int? value) {
                   setState(() {
                     _ingredientId = value!;
                   });
                 },
                 decoration: const InputDecoration(labelText: 'Ингредиент'),
                 items:
-                    [
+                    <dynamic>[
                       // Сюда нужно добавить список ингредиентов
-                    ].map((ingredient) {
+                    ].map((dynamic ingredient) {
                       return DropdownMenuItem<int>(
                         value: ingredient.id,
                         child: Text(ingredient.name),
                       );
                     }).toList(),
-                validator: (value) {
+                validator: (int? value) {
                   if (value == null || value == 0) {
                     return 'Пожалуйста, выберите ингредиент';
                   }
@@ -296,7 +285,7 @@ class _AddRecipeIngredientPageState extends State<AddRecipeIngredientPage> {
                 controller: _quantityController,
                 decoration: const InputDecoration(labelText: 'Количество'),
                 keyboardType: TextInputType.number,
-                validator: (value) {
+                validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return 'Пожалуйста, введите количество';
                   }
